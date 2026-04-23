@@ -1,7 +1,7 @@
 import PREDICTIONS, { COLORS, ZODIAC_FACTS, ZODIAC_SYMBOLS } from "@/lib/horoscope";
 import { NextResponse } from "next/server";
 
-// 1. Emoji mapping for the signs
+// Helper function to create a deterministic hash
 function generateHash(str: string) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -19,17 +19,38 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Missing year or month" }, { status: 400 });
     }
 
+    // Tracking sets to ensure uniqueness across the 12 signs
+    const usedColors = new Set<string>();
+    const usedNumbers = new Set<number>();
+
     const allHoroscopes = Object.keys(ZODIAC_FACTS).map((sign) => {
         const seedString = `${sign}-${year}-${month}`;
         const uniqueHash = generateHash(seedString);
 
-        // Calculate array indices
+        // 1. Predictions can be shared if needed
         const predictionIndex = uniqueHash % PREDICTIONS.length;
 
-        // Grab the entire color object dynamically from the new array
-        const colorObj = COLORS[uniqueHash % COLORS.length];
+        // 2. Find a unique color
+        let colorIndex = uniqueHash % COLORS.length;
+        // If the color name is already in the Set, move to the next one until we find a free one
+        while (usedColors.has(COLORS[colorIndex].name)) {
+            colorIndex = (colorIndex + 1) % COLORS.length;
+        }
+        // Mark this color as used for this month/year
+        usedColors.add(COLORS[colorIndex].name);
 
-        const luckyNumber = (uniqueHash % 99) + 1;
+        // 3. Find a unique lucky number (between 1 and 99)
+        let luckyNumber = (uniqueHash % 99) + 1;
+        // If the number is already in the Set, increment until we find a free one
+        while (usedNumbers.has(luckyNumber)) {
+            luckyNumber += 1;
+            if (luckyNumber > 99) luckyNumber = 1; // Wrap around if it hits 100
+        }
+        // Mark this number as used
+        usedNumbers.add(luckyNumber);
+
+        // 4. Assemble the data
+        const colorObj = COLORS[colorIndex];
 
         return {
             sign: sign,
@@ -47,5 +68,3 @@ export async function GET(request: Request) {
         headers: { 'Cache-Control': 'public, s-maxage=31536000, immutable' }
     });
 }
-
-
