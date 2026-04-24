@@ -57,7 +57,7 @@ export default function MonthGrid({
                     const isToday = today.getMonth() + 1 === month && today.getDate() === day;
 
                     return (
-                        <Link key={day} href={`/${year}/${String(month).padStart(2, "0")}/${String(day).padStart(2, "0")}`} style={{ textDecoration: "none" }}>
+                        <Link key={day} prefetch={false} href={`/${year}/${String(month).padStart(2, "0")}/${String(day).padStart(2, "0")}`} style={{ textDecoration: "none" }}>
                             <DayCell
                                 day={day}
                                 primary={value.palette.primary}
