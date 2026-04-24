@@ -7,10 +7,10 @@ import NoDataFound from "@/components/noData";
 export async function generateMetadata({
     params,
 }: {
-    params: Promise<{ year: string; month: string; day: string }>;
+    params: Promise<{ year: string; month: string; }>;
 }): Promise<Metadata> {
-    const { year, month, day } = await params;
-    const parts = [year, month, day].filter(Boolean);
+    const { year, month } = await params;
+    const parts = [year, month].filter(Boolean);
     const dateString = parts.join("/");
     return {
         title: `DateShade: ${dateString}`,
@@ -23,17 +23,16 @@ export default async function MonthLayout({
     params,
 }: {
     children: React.ReactNode;
-    params: Promise<{ year: string; month: string; day: string }>;
+    params: Promise<{ year: string; month: string; }>;
 }) {
-    const { year, month, day } = await params;
+    const { year, month } = await params;
 
     const y = Number(year);
     const m = Number(month);
-    const d = Number(day);
 
-    if (!isValidDate(y, m, d)) return <NoDataFound />;
+    if (!isValidDate(y, m)) return <NoDataFound />;
 
-    const dateData = getCurrentDateDetails(y, m, d);
+    const dateData = getCurrentDateDetails(y, m);
 
     const bg = dateData.palette.background;
     const primary = dateData.palette.primary;
