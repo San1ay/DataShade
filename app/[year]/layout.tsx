@@ -12,8 +12,8 @@ export async function generateMetadata({
     const parts = [year, month, day].filter(Boolean);
     const dateString = parts.join("/");
     return {
-        title: `SoulShade: ${dateString}`,
-        description: "Your birthday, reimagined in color.",
+        title: `DateShade: ${dateString}`,
+        description: "Dates, reimagined in color.",
     };
 }
 

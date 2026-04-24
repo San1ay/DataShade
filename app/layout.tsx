@@ -4,8 +4,12 @@ import getDayPalette from "@/lib/getDayPalette";
 import hexToRgba from "@/utils/hexToRgba";
 
 export const metadata: Metadata = {
-  title: "SoulShade",
-  description: "Your birthday, reimagined in color.",
+  title: "DateShade",
+  description: "Dates, reimagined in color.",
+
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
