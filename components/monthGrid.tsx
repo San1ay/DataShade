@@ -3,7 +3,6 @@ import getDayPalette from "@/lib/getDayDetails";
 import DayCell from "./dayCell";
 import { DAYS } from "@/utils/constants";
 
-
 export default function MonthGrid({
     month,
     monthName,
@@ -20,8 +19,25 @@ export default function MonthGrid({
 
     return (
         <div>
-            <h2 style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "0.4rem", opacity: 0.5 }}>
-                {monthName}
+            <h2 style={{
+                fontSize: "0.65rem",
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                marginBottom: "0.4rem",
+                opacity: 0.5
+            }}>
+                <Link
+                    href={`/${year}/${month}`}
+                    style={{
+                        textDecoration: "none",
+                        color: "inherit",
+                        borderBottom: "1px dashed currentColor",
+                        cursor: "pointer",
+                    }}
+                    title={`View ${monthName} ${year}`}
+                >
+                    {monthName}
+                </Link>
             </h2>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px", marginBottom: "2px" }}>

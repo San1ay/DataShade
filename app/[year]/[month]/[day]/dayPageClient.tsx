@@ -1,19 +1,40 @@
 "use client";
 
 import { useRouter, useParams } from "next/navigation";
+import { format, intervalToDuration, formatDuration } from "date-fns";
 import { MONTHS } from "@/utils/constants";
 import EventsSection from "@/components/eventsSection";
 import ZodiacSection from "@/components/zodiacSection";
 import OnThisDaySection from "@/components/onThisDaySection";
+import HomeButton from "@/components/homeButton";
 
-function formatDateLabel(year: number, month: number, day: number) {
-    const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
+// Helper to format: "Friday, 2 years 3 months 5 days ago"
+function formatRelativeDateLabel(year: number, month: number, day: number) {
+    const targetDate = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to midnight for accurate distance
+
+    // Get the full weekday name (e.g., "Friday")
+    const dayName = format(targetDate, "EEEE");
+
+    if (targetDate.getTime() === today.getTime()) {
+        return `— ${dayName}, Today`;
+    }
+
+    const isFuture = targetDate > today;
+
+    // Calculate exact difference in years, months, and days
+    const duration = intervalToDuration({
+        start: isFuture ? today : targetDate,
+        end: isFuture ? targetDate : today
     });
+
+    // Formats into a clean string: "2 years 3 months 5 days"
+    const durationStr = formatDuration(duration, {
+        format: ['years', 'months', 'days']
+    });
+
+    return `— ${dayName}, ${durationStr} ${isFuture ? "from now" : "ago"}`;
 }
 
 export default function DayPageClient() {
@@ -28,9 +49,9 @@ export default function DayPageClient() {
     const daysInMonth = new Date(year, month, 0).getDate();
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-    // Date comparison to hide "On This Day" for future dates
+    // Date comparison to hide "On This Day" / News for future dates
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize time to midnight for accurate day comparison
+    today.setHours(0, 0, 0, 0);
     const requestedDate = new Date(year, month - 1, day);
     const isFutureDate = requestedDate > today;
 
@@ -101,6 +122,7 @@ export default function DayPageClient() {
                 paddingBottom: "1.5rem"
             }}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "1rem" }}>
+                    <HomeButton />
                     <h1 style={{
                         display: "flex",
                         alignItems: "center",
@@ -111,9 +133,7 @@ export default function DayPageClient() {
                         margin: 0,
                         whiteSpace: "nowrap"
                     }}>
-                        {/* Day Navigation with Arrows */}
                         <button className="nav-arrow" onClick={() => navigateDay(-1)} style={navButtonStyle}>&lt;</button>
-
                         <span
                             className="breadcrumb"
                             style={{ borderBottom: "1px dashed currentColor", cursor: "pointer", opacity: 0.8, transition: "opacity 0.2s" }}
@@ -122,10 +142,8 @@ export default function DayPageClient() {
                             {year}
                         </span>
 
-
                         <span style={{ opacity: 0.2, margin: "0 0.75rem", fontWeight: 100 }}>/</span>
 
-                        {/* Breadcrumb: Month -> Goes to /[year]/[month] */}
                         <span
                             className="breadcrumb"
                             style={{ borderBottom: "1px dashed currentColor", cursor: "pointer", opacity: 0.8, transition: "opacity 0.2s" }}
@@ -148,7 +166,7 @@ export default function DayPageClient() {
                         opacity: 0.5,
                         whiteSpace: "nowrap"
                     }}>
-                        — {formatDateLabel(year, month, day).split(',')[0]}
+                        {formatRelativeDateLabel(year, month, day)}
                     </span>
                 </div>
 
@@ -158,14 +176,13 @@ export default function DayPageClient() {
                         {years.map(y => <option key={y} value={y}>{y}</option>)}
                     </select>
 
-
                     <select className="jump-select" value={month} onChange={(e) => handleJump(year, parseInt(e.target.value), day)} style={selectStyle}>
                         {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
                     </select>
+
                     <select className="jump-select" value={day} onChange={(e) => handleJump(year, month, parseInt(e.target.value))} style={selectStyle}>
                         {days.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
-
                 </div>
             </header>
 
@@ -181,7 +198,7 @@ export default function DayPageClient() {
                         </div>
                     )}
 
-                    {/* Wikipedia History Component - Only renders if date is NOT in the future */}
+                    {/* Wikipedia History Component */}
                     <div style={{ opacity: 0.8 }}>
                         <OnThisDaySection month={month} day={day} />
                     </div>

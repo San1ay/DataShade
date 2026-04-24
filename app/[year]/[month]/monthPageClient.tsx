@@ -5,6 +5,7 @@ import MonthGrid from "@/components/monthGrid";
 import ZodiacSection from "@/components/zodiacSection";
 import EventsSection from "@/components/eventsSection";
 import { MONTHS } from "@/utils/constants";
+import HomeButton from "@/components/homeButton";
 
 function monthLabel(year: number, month: number, today: Date) {
     const currentYear = today.getFullYear();
@@ -88,6 +89,8 @@ export default function MonthPageClient({ year, month }: { year: number; month: 
 
                 {/* Left Side: Title and Relative Label */}
                 <div style={{ display: "flex", alignItems: "baseline", gap: "1rem" }}>
+                    <HomeButton />
+
                     <h1 style={{
                         display: "flex",
                         alignItems: "center",
