@@ -24,7 +24,9 @@ export default function MonthGridClient({
                 letterSpacing: "0.3em",
                 textTransform: "uppercase",
                 marginBottom: "0.4rem",
-                opacity: 0.5
+                opacity: 0.5,
+                textAlign: "center",
+
             }}>
                 <Link
                     href={`/${year}/${month}`}
@@ -33,10 +35,11 @@ export default function MonthGridClient({
                         color: "inherit",
                         borderBottom: "1px dashed currentColor",
                         cursor: "pointer",
+
                     }}
-                    title={`View ${monthName} ${year}`}
+                    title={`View  ${year} ${monthName}`}
                 >
-                    {monthName}
+                    {today.getFullYear() !== year && ` ${year}`} {monthName}
                 </Link>
             </h2>
 
